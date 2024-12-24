@@ -2,6 +2,7 @@ package es.eriktorr.pager
 
 import commons.refined.Constraints.NonEmptyString
 
+import cats.Order
 import cats.effect.IO
 import cats.implicits.catsSyntaxEither
 import io.github.iltotore.iron.*
@@ -34,3 +35,5 @@ object Repository:
   opaque type Version <: String :| NonEmptyString = String :| NonEmptyString
 
   object Version extends RefinedTypeOps[String, NonEmptyString, Version]
+
+  given Order[Repository] = Order.by[Repository, Long](x => x.id)

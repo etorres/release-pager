@@ -11,11 +11,11 @@ import doobie.postgres.implicits.*
 import java.time.LocalDateTime
 
 final class TestRepositoryServiceImpl(transactor: HikariTransactor[IO]):
-  def addAll(repositories: NonEmptyList[RepositoryRow]): IO[Unit] =
+  def addAll(row: NonEmptyList[RepositoryRow]): IO[Unit] =
     val sql = """INSERT INTO repositories
                 |(id, group_id, artifact_id, version, updated_at) 
                 |values (?, ?, ?, ?, ?)""".stripMargin
     Update[RepositoryRow](sql)
-      .updateMany(repositories)
+      .updateMany(row)
       .transact(transactor)
       .void

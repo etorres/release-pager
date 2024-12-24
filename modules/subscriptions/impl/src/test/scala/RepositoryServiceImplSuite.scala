@@ -1,11 +1,12 @@
 package es.eriktorr.pager
 
 import Repository.{ArtifactId, GroupId, Id, Version}
-import RepositoryGenerators.{idGen, projectGen}
+import RepositoryGenerators.projectGen
 import RepositoryServiceImplSuite.{testCaseGen, TestCase}
+import SubscriptionGenerator.idGen
 import commons.spec.CollectionGenerators.{nDistinct, nDistinctExcluding}
-import commons.spec.StringGenerators.alphaNumericStringBetween
 import commons.spec.TemporalGenerators.{localDateTimeAfter, localDateTimeBefore}
+import db.TestRepositoryGenerator.repositoryRowGen
 import db.{RepositoryRow, TestRepositoryServiceImpl}
 import spec.PostgresSuite
 
@@ -42,16 +43,20 @@ object RepositoryServiceImplSuite:
     earliestProjects <- nDistinct(size, projectGen())
     otherProjects <- nDistinctExcluding(size, projectGen(), earliestProjects)
     earliestRows <- earliestIds.zip(earliestProjects).traverse { case (id, (groupId, artifactId)) =>
-      for
-        version <- alphaNumericStringBetween(3, 5)
-        updatedAt <- localDateTimeBefore(checkpoint).map(_.minusMinutes(3L).nn)
-      yield RepositoryRow(id, groupId, artifactId, version, updatedAt)
+      repositoryRowGen(
+        idGen = id.toLong,
+        groupIdGen = groupId,
+        artifactIdGen = artifactId,
+        updatedAtGen = localDateTimeBefore(checkpoint).map(_.minusMinutes(3L).nn),
+      )
     }
     otherRows <- otherIds.zip(otherProjects).traverse { case (id, (groupId, artifactId)) =>
-      for
-        version <- alphaNumericStringBetween(3, 5)
-        updatedAt <- localDateTimeAfter(checkpoint)
-      yield RepositoryRow(id, groupId, artifactId, version, updatedAt)
+      repositoryRowGen(
+        idGen = id.toLong,
+        groupIdGen = groupId,
+        artifactIdGen = artifactId,
+        updatedAtGen = localDateTimeAfter(checkpoint),
+      )
     }
     expected = earliestRows.map(row =>
       Repository(

@@ -9,14 +9,14 @@ final class ReleaseChecker[
     Notification,
     Notified: Semigroup,
     Repository,
-    Subscription,
+    Subscriber,
     Updated,
     Version,
 ](
     repositoryService: RepositoryService[Repository, Updated, Version],
     releaseFinder: ReleaseFinder[Repository, Version],
-    subscriptionService: SubscriptionService[?, Repository, ?, Subscription],
-    notificationBuilder: NotificationBuilder[Subscription, Version, Notification],
+    subscriptionService: SubscriptionService[Repository, Subscriber, ?, ?],
+    notificationBuilder: NotificationBuilder[Subscriber, Version, Notification],
     notificationSender: NotificationSender[Notification, Notified, Updated],
 ):
   def checkAndNotify: OptionT[IO, Notified] = OptionT(for
@@ -28,8 +28,8 @@ final class ReleaseChecker[
           maybeNotified <- maybeVersion.traverse(version =>
             for
               updated <- repositoryService.update(repository, version)
-              subscriptions <- subscriptionService.subscribersOf(repository)
-              notification <- notificationBuilder.make(subscriptions, version)
+              subscribers <- subscriptionService.subscribersOf(repository)
+              notification <- notificationBuilder.make(subscribers, version)
               notified <- notificationSender.send(updated, notification)
             yield notified,
           )

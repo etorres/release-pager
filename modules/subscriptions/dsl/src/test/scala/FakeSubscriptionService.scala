@@ -3,11 +3,11 @@ package es.eriktorr.pager
 import cats.effect.IO
 
 final class FakeSubscriptionService(subscriptions: Map[Int, List[String]])
-    extends SubscriptionService[String, Int, String, String]:
-  override def subscribe(chatId: String, repository: Int): IO[String] =
+    extends SubscriptionService[Int, String, String, String]:
+  override def subscribe(repository: Int, subscriberId: String): IO[String] =
     IO.raiseError(IllegalArgumentException("unsupported operation"))
 
-  override def unsubscribe(subscriptionId: String): IO[String] =
+  override def unsubscribe(repository: Int, subscriberId: String): IO[String] =
     IO.raiseError(IllegalArgumentException("unsupported operation"))
 
   override def subscribersOf(repository: Int): IO[List[String]] =

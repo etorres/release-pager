@@ -42,10 +42,10 @@ lazy val baseSettings: Project => Project = _.settings(
     "org.apache.logging.log4j" % "log4j-core" % "2.24.3" % Test,
     "org.apache.logging.log4j" % "log4j-layout-template-json" % "2.24.3" % Test,
     "org.apache.logging.log4j" % "log4j-slf4j2-impl" % "2.24.3" % Test,
-    "org.typelevel" %% "cats-core" % "2.12.0",
-    "org.typelevel" %% "cats-effect" % "3.5.7",
     "org.scalameta" %% "munit" % "1.0.3" % Test,
     "org.scalameta" %% "munit-scalacheck" % "1.0.0" % Test,
+    "org.typelevel" %% "cats-core" % "2.12.0",
+    "org.typelevel" %% "cats-effect" % "3.5.7",
     "org.typelevel" %% "munit-cats-effect" % "2.0.0" % Test,
     "org.typelevel" %% "scalacheck-effect" % "1.0.4" % Test,
     "org.typelevel" %% "scalacheck-effect-munit" % "1.0.4" % Test,
@@ -82,10 +82,8 @@ lazy val database = project
       "org.tpolecat" %% "doobie-core" % "1.0.0-RC5",
       "org.tpolecat" %% "doobie-free" % "1.0.0-RC5",
       "org.tpolecat" %% "doobie-hikari" % "1.0.0-RC5",
-      "org.tpolecat" %% "doobie-postgres" % "1.0.0-RC5",
       "org.typelevel" %% "cats-collections-core" % "0.9.9",
       "org.typelevel" %% "cats-effect-kernel" % "3.5.7",
-      "org.typelevel" %% "log4cats-slf4j" % "2.7.0",
     ),
   )
   .dependsOn(commons % "test->test;compile->compile")
@@ -93,44 +91,24 @@ lazy val database = project
 lazy val `notifications-dsl` = project
   .in(file("modules/notifications/dsl"))
   .configure(baseSettings)
+  .settings(
+    libraryDependencies ++= Seq(),
+  )
   .dependsOn(commons % "test->test;compile->compile")
 
 lazy val `notifications-impl` = project
   .in(file("modules/notifications/impl"))
   .configure(baseSettings)
+  .settings(
+    libraryDependencies ++= Seq(),
+  )
   .dependsOn(`notifications-dsl` % "test->test;compile->compile")
 
 lazy val `notifications-sender` = project
   .in(file("modules/notifications-sender"))
   .configure(baseSettings)
   .settings(
-    libraryDependencies ++= Seq(
-      "co.fs2" %% "fs2-core" % "3.11.0",
-      "co.fs2" %% "fs2-io" % "3.11.0",
-      "com.comcast" %% "ip4s-core" % "3.6.0",
-      "com.lmax" % "disruptor" % "3.4.4" % Runtime,
-      "com.monovore" %% "decline" % "2.4.1",
-      "com.monovore" %% "decline-effect" % "2.4.1",
-      "io.circe" %% "circe-core" % "0.14.10",
-      "io.circe" %% "circe-parser" % "0.14.10",
-      "io.github.iltotore" %% "iron-cats" % "2.6.0",
-      "io.github.iltotore" %% "iron-circe" % "2.6.0",
-      "org.apache.logging.log4j" % "log4j-core" % "2.24.3" % Runtime,
-      "org.apache.logging.log4j" % "log4j-layout-template-json" % "2.24.3" % Runtime,
-      "org.apache.logging.log4j" % "log4j-slf4j2-impl" % "2.24.3" % Runtime,
-      "org.http4s" %% "http4s-circe" % "0.23.30",
-      "org.http4s" %% "http4s-client" % "0.23.30",
-      "org.http4s" %% "http4s-core" % "0.23.30",
-      "org.http4s" %% "http4s-ember-client" % "0.23.30",
-      "org.typelevel" %% "cats-effect-kernel" % "3.5.7",
-      "org.typelevel" %% "cats-effect-std" % "3.5.7",
-      "org.typelevel" %% "cats-kernel" % "2.12.0",
-      "org.typelevel" %% "case-insensitive" % "1.4.2",
-      "org.typelevel" %% "log4cats-core" % "2.7.0",
-      "org.typelevel" %% "log4cats-slf4j" % "2.7.0",
-      "org.typelevel" %% "squants" % "1.8.3",
-      "org.typelevel" %% "vault" % "3.6.0",
-    ),
+    libraryDependencies ++= Seq(),
     Universal / maintainer := "https://github.com/etorres/release-pager",
   )
   .dependsOn(commons % "test->test;compile->compile")
@@ -176,8 +154,8 @@ lazy val `subscriptions-dsl` = project
   .configure(baseSettings)
   .settings(
     libraryDependencies ++= Seq(
-      "io.github.iltotore" %% "iron-cats" % "2.6.0",
       "io.hypersistence" % "hypersistence-tsid" % "2.1.3",
+      "org.typelevel" %% "cats-kernel" % "2.12.0",
     ),
   )
   .dependsOn(commons % "test->test;compile->compile")
@@ -191,13 +169,20 @@ lazy val `subscriptions-impl` = project
       "co.fs2" %% "fs2-io" % "3.11.0",
       "com.lmax" % "disruptor" % "3.4.4" % Runtime,
       "com.zaxxer" % "HikariCP" % "6.2.1" exclude ("org.slf4j", "slf4j-api"),
-      "io.circe" %% "circe-core" % "0.14.8",
+      "io.circe" %% "circe-core" % "0.14.10",
+      "io.github.iltotore" %% "iron" % "2.6.0",
+      "io.github.iltotore" %% "iron-cats" % "2.6.0",
       "org.http4s" %% "http4s-circe" % "0.23.30",
       "org.http4s" %% "http4s-client" % "0.23.30",
       "org.http4s" %% "http4s-core" % "0.23.30",
       "org.http4s" %% "http4s-ember-client" % "0.23.30",
+      "org.tpolecat" %% "doobie-core" % "1.0.0-RC5",
+      "org.tpolecat" %% "doobie-free" % "1.0.0-RC5",
+      "org.tpolecat" %% "doobie-hikari" % "1.0.0-RC5",
       "org.typelevel" %% "case-insensitive" % "1.4.2",
       "org.typelevel" %% "cats-effect-kernel" % "3.5.7",
+      "org.typelevel" %% "cats-free" % "2.12.0",
+      "org.typelevel" %% "cats-kernel" % "2.12.0",
       "org.typelevel" %% "log4cats-core" % "2.7.0",
       "org.typelevel" %% "vault" % "3.6.0",
     ),
