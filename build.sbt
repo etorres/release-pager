@@ -57,8 +57,8 @@ lazy val baseSettings: Project => Project = _.settings(
   Test / testOptions += Tests.Argument(MUnitFramework, "--exclude-tags=online"),
 )
 
-lazy val commons = project
-  .in(file("modules/commons"))
+lazy val `commons-lang` = project
+  .in(file("modules/commons/commons-lang"))
   .configure(baseSettings)
   .settings(
     libraryDependencies ++= Seq(
@@ -70,8 +70,8 @@ lazy val commons = project
     ),
   )
 
-lazy val database = project
-  .in(file("modules/database"))
+lazy val `commons-db` = project
+  .in(file("modules/commons/commons-db"))
   .configure(baseSettings)
   .settings(
     libraryDependencies ++= Seq(
@@ -86,36 +86,29 @@ lazy val database = project
       "org.typelevel" %% "cats-effect-kernel" % "3.5.7",
     ),
   )
-  .dependsOn(commons % "test->test;compile->compile")
+  .dependsOn(`commons-lang` % "test->test;compile->compile")
 
 lazy val `notifications-dsl` = project
-  .in(file("modules/notifications/dsl"))
+  .in(file("modules/notifications/notifications-dsl"))
   .configure(baseSettings)
-  .settings(
-    libraryDependencies ++= Seq(),
-  )
-  .dependsOn(commons % "test->test;compile->compile")
+  .dependsOn(`commons-lang` % "test->test;compile->compile")
 
 lazy val `notifications-impl` = project
-  .in(file("modules/notifications/impl"))
+  .in(file("modules/notifications/notifications-impl"))
   .configure(baseSettings)
   .settings(
-    libraryDependencies ++= Seq(),
+    libraryDependencies ++= Seq(
+      "dev.profunktor" %% "redis4cats-effects" % "1.7.2",
+      "io.github.iltotore" %% "iron-cats" % "2.6.0",
+    ),
   )
-  .dependsOn(`notifications-dsl` % "test->test;compile->compile")
-
-lazy val `notifications-sender` = project
-  .in(file("modules/notifications-sender"))
-  .configure(baseSettings)
-  .settings(
-    libraryDependencies ++= Seq(),
-    Universal / maintainer := "https://github.com/etorres/release-pager",
+  .dependsOn(
+    `notifications-dsl` % "test->test;compile->compile",
+    `subscriptions-dsl` % "test->test;compile->compile",
   )
-  .dependsOn(commons % "test->test;compile->compile")
-  .enablePlugins(JavaAppPackaging)
 
-lazy val `release-checker` = project
-  .in(file("modules/release-checker"))
+lazy val `releases-checker` = project
+  .in(file("modules/releases/releases-checker"))
   .configure(baseSettings)
   .settings(
     libraryDependencies ++= Seq(
@@ -125,6 +118,7 @@ lazy val `release-checker` = project
       "com.lmax" % "disruptor" % "3.4.4" % Runtime,
       "com.monovore" %% "decline" % "2.4.1",
       "com.monovore" %% "decline-effect" % "2.4.1",
+      "com.softwaremill.macwire" %% "macros" % "2.6.4" % Provided,
       "io.circe" %% "circe-core" % "0.14.10",
       "io.circe" %% "circe-parser" % "0.14.10",
       "io.github.iltotore" %% "iron-cats" % "2.6.0",
@@ -149,8 +143,18 @@ lazy val `release-checker` = project
   )
   .enablePlugins(JavaAppPackaging)
 
+lazy val `releases-sender` = project
+  .in(file("modules/releases/releases-sender"))
+  .configure(baseSettings)
+  .settings(
+    libraryDependencies ++= Seq(),
+    Universal / maintainer := "https://github.com/etorres/release-pager",
+  )
+  .dependsOn(`commons-lang` % "test->test;compile->compile")
+  .enablePlugins(JavaAppPackaging)
+
 lazy val `subscriptions-dsl` = project
-  .in(file("modules/subscriptions/dsl"))
+  .in(file("modules/subscriptions/subscriptions-dsl"))
   .configure(baseSettings)
   .settings(
     libraryDependencies ++= Seq(
@@ -158,10 +162,10 @@ lazy val `subscriptions-dsl` = project
       "org.typelevel" %% "cats-kernel" % "2.12.0",
     ),
   )
-  .dependsOn(commons % "test->test;compile->compile")
+  .dependsOn(`commons-lang` % "test->test;compile->compile")
 
 lazy val `subscriptions-impl` = project
-  .in(file("modules/subscriptions/impl"))
+  .in(file("modules/subscriptions/subscriptions-impl"))
   .configure(baseSettings)
   .settings(
     libraryDependencies ++= Seq(
@@ -179,6 +183,7 @@ lazy val `subscriptions-impl` = project
       "org.tpolecat" %% "doobie-core" % "1.0.0-RC5",
       "org.tpolecat" %% "doobie-free" % "1.0.0-RC5",
       "org.tpolecat" %% "doobie-hikari" % "1.0.0-RC5",
+      "org.tpolecat" %% "doobie-postgres" % "1.0.0-RC5",
       "org.typelevel" %% "case-insensitive" % "1.4.2",
       "org.typelevel" %% "cats-effect-kernel" % "3.5.7",
       "org.typelevel" %% "cats-free" % "2.12.0",
@@ -188,19 +193,19 @@ lazy val `subscriptions-impl` = project
     ),
   )
   .dependsOn(
-    database % "test->test;compile->compile",
+    `commons-db` % "test->test;compile->compile",
     `subscriptions-dsl` % "test->test;compile->compile",
   )
 
 lazy val root = project
   .in(file("."))
   .aggregate(
-    commons,
-    database,
+    `commons-db`,
+    `commons-lang`,
     `notifications-dsl`,
     `notifications-impl`,
-    `notifications-sender`,
-    `release-checker`,
+    `releases-checker`,
+    `releases-sender`,
     `subscriptions-dsl`,
     `subscriptions-impl`,
   )

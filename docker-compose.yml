@@ -1,4 +1,11 @@
 services:
+  redis:
+    image: redis
+    hostname: redis.test
+    container_name: redis.test
+    ports:
+      - "6379:6379"
+
   postgres:
     image: postgres
     hostname: postgres.test
@@ -8,7 +15,7 @@ services:
     environment:
       POSTGRES_PASSWORD: s3c4Et
     volumes:
-      - "./modules/database/src/test/resources/postgres:/docker-entrypoint-initdb.d"
+      - "./modules/commons/commons-db/src/test/resources/postgres:/docker-entrypoint-initdb.d"
 
   adminer:
     image: adminer
