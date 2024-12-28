@@ -1,10 +1,25 @@
 services:
-  redis:
-    image: redis
-    hostname: redis.test
-    container_name: redis.test
+  kafka:
+    image: confluentinc/cp-kafka
+    hostname: kafka.test
+    container_name: kafka.test
     ports:
-      - "6379:6379"
+      - "9101:9101"
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka.test:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka.test:29093
+      KAFKA_LISTENERS: PLAINTEXT://kafka.test:29092,CONTROLLER://kafka.test:29093,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      CLUSTER_ID: p8fFEbKGQ22B6M_Da_vCBw
 
   postgres:
     image: postgres

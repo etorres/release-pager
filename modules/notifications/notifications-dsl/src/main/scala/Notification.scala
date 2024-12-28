@@ -2,7 +2,10 @@ package es.eriktorr.pager
 
 import commons.refined.Constraints.NonEmptyString
 
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.{Decoder, Encoder}
 import io.github.iltotore.iron.*
+import io.github.iltotore.iron.circe.given
 import io.github.iltotore.iron.constraint.any.Pure
 
 final case class Notification(
@@ -29,3 +32,12 @@ object Notification:
   object Version extends RefinedTypeOps[String, NonEmptyString, Version]
 
   final case class Addressee(chatId: ChatId, name: Name)
+
+  object Addressee:
+    given Decoder[Addressee] = deriveDecoder
+
+    given Encoder[Addressee] = deriveEncoder
+
+  given Decoder[Notification] = deriveDecoder
+
+  given Encoder[Notification] = deriveEncoder

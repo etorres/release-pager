@@ -26,6 +26,10 @@ TO-DO:
 * [JobRunr Installation - Storage](https://www.jobrunr.io/en/documentation/installation/storage/).
 * [Work with systemd.time like calendar events in Scala](https://github.com/eikek/calev).
 
+### RabbitMQ
+
+* [Ensuring Exactly-Once Delivery with RabbitMQ](https://reintech.io/blog/ensuring-exactly-once-delivery-rabbitmq).
+
 ### Misc
 
 * [Cats Effect - Env](https://typelevel.org/cats-effect/docs/std/env).

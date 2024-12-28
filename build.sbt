@@ -57,19 +57,6 @@ lazy val baseSettings: Project => Project = _.settings(
   Test / testOptions += Tests.Argument(MUnitFramework, "--exclude-tags=online"),
 )
 
-lazy val `commons-lang` = project
-  .in(file("modules/commons/commons-lang"))
-  .configure(baseSettings)
-  .settings(
-    libraryDependencies ++= Seq(
-      "com.47deg" %% "scalacheck-toolbox-datetime" % "0.7.0" % Test,
-      "io.hypersistence" % "hypersistence-tsid" % "2.1.3",
-      "org.typelevel" %% "cats-collections-core" % "0.9.9" % Test,
-      "org.typelevel" %% "cats-effect-kernel" % "3.5.7",
-      "org.typelevel" %% "cats-kernel" % "2.12.0",
-    ),
-  )
-
 lazy val `commons-db` = project
   .in(file("modules/commons/commons-db"))
   .configure(baseSettings)
@@ -88,9 +75,47 @@ lazy val `commons-db` = project
   )
   .dependsOn(`commons-lang` % "test->test;compile->compile")
 
+lazy val `commons-lang` = project
+  .in(file("modules/commons/commons-lang"))
+  .configure(baseSettings)
+  .settings(
+    libraryDependencies ++= Seq(
+      "com.47deg" %% "scalacheck-toolbox-datetime" % "0.7.0" % Test,
+      "io.hypersistence" % "hypersistence-tsid" % "2.1.3",
+      "org.typelevel" %% "cats-collections-core" % "0.9.9" % Test,
+      "org.typelevel" %% "cats-effect-kernel" % "3.5.7",
+      "org.typelevel" %% "cats-kernel" % "2.12.0",
+    ),
+  )
+
+lazy val `commons-streams` = project
+  .in(file("modules/commons/commons-streams"))
+  .configure(baseSettings)
+  .settings(
+    libraryDependencies ++= Seq(
+      "co.fs2" %% "fs2-core" % "3.11.0",
+      "com.comcast" %% "ip4s-core" % "3.6.0",
+      "com.github.fd4s" %% "fs2-kafka" % "3.6.0",
+      "com.lmax" % "disruptor" % "3.4.4" % Runtime,
+      "io.circe" %% "circe-core" % "0.14.10",
+      "io.circe" %% "circe-parser" % "0.14.10",
+      "org.typelevel" %% "log4cats-core" % "2.7.0",
+      "org.typelevel" %% "log4cats-slf4j" % "2.7.0",
+    ),
+  )
+  .dependsOn(`commons-lang` % "test->test;compile->compile")
+
 lazy val `notifications-dsl` = project
   .in(file("modules/notifications/notifications-dsl"))
   .configure(baseSettings)
+  .settings(
+    libraryDependencies ++= Seq(
+      "co.fs2" %% "fs2-core" % "3.11.0",
+      "io.circe" %% "circe-core" % "0.14.10",
+      "io.circe" %% "circe-generic" % "0.14.10",
+      "io.github.iltotore" %% "iron-circe" % "2.6.0",
+    ),
+  )
   .dependsOn(`commons-lang` % "test->test;compile->compile")
 
 lazy val `notifications-impl` = project
@@ -98,11 +123,14 @@ lazy val `notifications-impl` = project
   .configure(baseSettings)
   .settings(
     libraryDependencies ++= Seq(
-      "dev.profunktor" %% "redis4cats-effects" % "1.7.2",
+      "co.fs2" %% "fs2-core" % "3.11.0",
+      "io.circe" %% "circe-core" % "0.14.10",
       "io.github.iltotore" %% "iron-cats" % "2.6.0",
+      "org.typelevel" %% "cats-kernel" % "2.12.0",
     ),
   )
   .dependsOn(
+    `commons-streams` % "test->test;compile->compile",
     `notifications-dsl` % "test->test;compile->compile",
     `subscriptions-dsl` % "test->test;compile->compile",
   )
@@ -112,8 +140,6 @@ lazy val `releases-checker` = project
   .configure(baseSettings)
   .settings(
     libraryDependencies ++= Seq(
-      "co.fs2" %% "fs2-core" % "3.11.0",
-      "co.fs2" %% "fs2-io" % "3.11.0",
       "com.comcast" %% "ip4s-core" % "3.6.0",
       "com.lmax" % "disruptor" % "3.4.4" % Runtime,
       "com.monovore" %% "decline" % "2.4.1",

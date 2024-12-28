@@ -2,13 +2,13 @@ package es.eriktorr.pager
 
 import RepositoryServiceImpl.RepositoryServiceConfig
 import api.HttpClient
+import commons.std.TSIDGen
 import db.JdbcTransactor
+import streams.Streams.KafkaSender
 
 import cats.effect.{ExitCode, IO}
 import com.monovore.decline.Opts
 import com.monovore.decline.effect.CommandIOApp
-import dev.profunktor.redis4cats.Redis
-import dev.profunktor.redis4cats.effect.Log.Stdout.given
 import org.typelevel.log4cats.SelfAwareStructuredLogger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 
@@ -21,17 +21,18 @@ object ReleaseCheckerApp extends CommandIOApp(name = "release-checker", header =
   private def program() = for
     logger <- Slf4jLogger.create[IO]
     given SelfAwareStructuredLogger[IO] = logger
+    given TSIDGen[IO] = TSIDGen[IO]
     releaseChecker <- (for
       httpClient <- HttpClient(???).resource
-      redis <- Redis[IO].utf8("redis://localhost")
+      kafkaSender <- KafkaSender.resource[Notification](???)
       transactor <- JdbcTransactor(???).resource
-    yield (httpClient, transactor)).use: (httpClient, transactor) =>
+    yield (httpClient, kafkaSender, transactor)).use: (httpClient, kafkaSender, transactor) =>
       val releaseChecker = ReleaseChecker.impl(
         RepositoryServiceImpl.Postgres(transactor, RepositoryServiceConfig.default),
         ReleaseFinderImpl.MavenCentral(httpClient),
         SubscriptionServiceImpl.Postgres(transactor),
         NotificationBuilderImpl.Default(),
-        NotificationSenderImpl.Redis(),
+        NotificationSenderImpl.Kafka(kafkaSender),
       )
       IO.pure(releaseChecker).flatMap(_ => IO.never)
   yield ExitCode.Success
