@@ -3,7 +3,7 @@
 [Designing your first multi-billion startup](https://scala.monster/design-a-pager/).
 
 TO-DO:
-* The node ID can be given to TSID.Factory by defining the tsid.node system property or the TSID_NODE environment variable. Otherwise, the node identifier will be chosen randomly.
+* The node ID can be given to `TSID.Factory` by defining the tsid.node system property or the TSID_NODE environment variable. Otherwise, the node identifier will be chosen randomly.
 
 ## Resources
 
@@ -26,9 +26,9 @@ TO-DO:
 * [JobRunr Installation - Storage](https://www.jobrunr.io/en/documentation/installation/storage/).
 * [Work with systemd.time like calendar events in Scala](https://github.com/eikek/calev).
 
-### RabbitMQ
+### Apache Kafka
 
-* [Ensuring Exactly-Once Delivery with RabbitMQ](https://reintech.io/blog/ensuring-exactly-once-delivery-rabbitmq).
+* [Exactly Once Processing in Kafka with Java](https://www.baeldung.com/kafka-exactly-once).
 
 ### Misc
 

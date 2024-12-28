@@ -5,7 +5,7 @@ import api.HttpClient
 import application.{ReleaseCheckerConfig, ReleaseCheckerParams}
 import commons.std.TSIDGen
 import db.JdbcTransactor
-import streams.Streams.KafkaSender
+import streams.KafkaStreams.KafkaSender
 
 import cats.effect.{ExitCode, IO}
 import cats.implicits.catsSyntaxTuple2Semigroupal

@@ -15,13 +15,13 @@ import io.circe.{Decoder, Encoder}
 
 import scala.concurrent.duration.DurationInt
 
-sealed abstract class Streams
+sealed abstract class KafkaStreams
 
-object Streams:
-  sealed trait Listener[T: Decoder] extends Streams:
+object KafkaStreams:
+  sealed trait Listener[T: Decoder] extends KafkaStreams:
     def listen(consumer: T => IO[Unit]): Stream[IO, Unit]
 
-  sealed trait Sender[T: Encoder] extends Streams:
+  sealed trait Sender[T: Encoder] extends KafkaStreams:
     def send(message: T): IO[Unit]
 
   final class KafkaListener[T: Decoder] private (

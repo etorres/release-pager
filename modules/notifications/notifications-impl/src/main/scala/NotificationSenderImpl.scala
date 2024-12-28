@@ -1,6 +1,6 @@
 package es.eriktorr.pager
 
-import streams.Streams.KafkaSender
+import streams.KafkaStreams.KafkaSender
 
 import cats.effect.IO
 
