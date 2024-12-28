@@ -11,11 +11,9 @@ final class TestNotificationListenerImpl(
     stateRef: Ref[IO, TestNotificationListenerImpl.NotificationListenerState],
 ) extends NotificationListener:
   def stream: Stream[IO, Unit] =
-    listener.listen(notification =>
-      stateRef.update(currentState =>
-        currentState.copy(notification :: currentState.notifications),
-      ),
-    )
+    listener.listen: notification =>
+      stateRef.update: currentState =>
+        currentState.copy(notification :: currentState.notifications)
 
 object TestNotificationListenerImpl:
   final case class NotificationListenerState(notifications: List[Notification])

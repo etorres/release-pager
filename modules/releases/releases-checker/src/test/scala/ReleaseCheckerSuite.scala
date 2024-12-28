@@ -14,18 +14,18 @@ final class ReleaseCheckerSuite extends CatsEffectSuite:
         subscriptions
           .filter { case (repository, _) => isEven(repository) }
           .toList
-          .map { case (repository, subscriptions) =>
-            val chatIds = subscriptions.sorted.mkString("[", ",", "]")
-            s"""notified->{
-               |  updated->{
-               |    repository:$repository, version:released->{repository:$repository}
-               |  },
-               |  notification->{
-               |    subscribers:$chatIds, repository:$repository, version:released->{repository:$repository}
-               |  }
-               |}""".stripMargin.replaceAll("\\s", "").nn.replaceAll("\\R", "").nn
-          }
-          .reduce(_ + _),
+          .map:
+            case (repository, subscriptions) =>
+              val chatIds = subscriptions.sorted.mkString("[", ",", "]")
+              s"""notified->{
+                 |  updated->{
+                 |    repository:$repository, version:released->{repository:$repository}
+                 |  },
+                 |  notification->{
+                 |    subscribers:$chatIds, repository:$repository, version:released->{repository:$repository}
+                 |  }
+                 |}""".stripMargin.replaceAll("\\s", "").nn.replaceAll("\\R", "").nn
+          .fold("")(_ + _),
       )
     ReleaseChecker(
       FakeRepositoryService(repositories),

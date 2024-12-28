@@ -20,6 +20,26 @@ object KafkaConfig:
   final case class BootstrapServer(host: Host, port: Port):
     def asString: String = s"${host.toString}:${port.value}"
 
+  object BootstrapServer:
+    def from(value: String): NonEmptyList[BootstrapServer] =
+      import scala.language.unsafeNulls
+      NonEmptyList.fromListUnsafe(
+        value
+          .split(",")
+          .toList
+          .map { server =>
+            val serverParts = server.split(":", 1).toList
+            serverParts match
+              case ::(head, next) =>
+                for
+                  host <- Host.fromString(head)
+                  port <- next.lastOption.flatMap(Port.fromString)
+                yield BootstrapServer(host, port)
+              case Nil => None
+          }
+          .collect { case Some(bootstrapServer) => bootstrapServer },
+      )
+
   opaque type ConsumerGroup <: String :| NonEmptyString = String :| NonEmptyString
 
   object ConsumerGroup extends RefinedTypeOps[String, NonEmptyString, ConsumerGroup]
