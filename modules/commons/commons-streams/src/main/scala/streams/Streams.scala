@@ -35,7 +35,6 @@ object Streams:
             json <- parse(committable.record.value)
             value <- json.as[T]
           yield value)
-          _ = println(s" >> RECEIVED: $value") // TODO
           _ <- consumer(value)
         yield ()).as(committable.offset)
       }
