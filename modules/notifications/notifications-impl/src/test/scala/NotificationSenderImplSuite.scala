@@ -3,25 +3,28 @@ package es.eriktorr.pager
 import NotificationGenerators.notificationGen
 import commons.spec.CollectionGenerators.nDistinct
 import spec.KafkaSuite
-import streams.TestNotificationListenerImpl
-import streams.TestNotificationListenerImpl.NotificationListenerState
+import streams.TestNotificationConsumer
+import streams.TestNotificationConsumer.NotificationConsumerState
 
 import cats.effect.{IO, Ref}
-import cats.implicits.toTraverseOps
+import cats.implicits.{catsKernelOrderingForOrder, toFoldableOps}
 import org.scalacheck.effect.PropF.forAllF
 
 final class NotificationSenderImplSuite extends KafkaSuite:
-  test("should send a notification"):
+  test("should send notifications"):
     forAllF(nDistinct(3, notificationGen())): notifications =>
       testStreams
         .resource[Notification]
         .use:
           case (sender, listener) =>
             (for
-              stateRef <- Ref.of[IO, NotificationListenerState](NotificationListenerState.empty)
+              stateRef <- Ref.of[IO, NotificationConsumerState](NotificationConsumerState.empty)
               notificationSender = NotificationSenderImpl.Kafka(sender)
-              testNotificationListener = TestNotificationListenerImpl(listener, stateRef)
-              _ <- notifications.traverse(notificationSender.send)
-              _ <- testNotificationListener.stream.take(2L).compile.drain
+              notificationListener = NotificationListenerImpl.Kafka(
+                listener,
+                TestNotificationConsumer(stateRef).consume,
+              )
+              _ <- notifications.traverse_(notificationSender.send)
+              _ <- notificationListener.stream.take(1L).compile.drain
               obtained <- stateRef.get
-            yield obtained.notifications).assertEquals(List(notifications.drop(1)))
+            yield obtained.notifications.sorted).assertEquals(notifications.sorted)

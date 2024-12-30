@@ -27,7 +27,7 @@ object ReleaseCheckerConfig:
           help = "Set Kafka Bootstrap Servers.",
         )
         .map(KafkaConfig.BootstrapServer.from)
-        .withDefault(NonEmptyList.one(KafkaConfig.defaultBootstrapServer)),
+        .withDefault(KafkaConfig.defaultBootstrapServers),
       Opts
         .env[KafkaConfig.ConsumerGroup](
           name = "RELEASE_CHECKER_KAFKA_CONSUMER_GROUP",
@@ -40,12 +40,7 @@ object ReleaseCheckerConfig:
           help = "Set Kafka Topic.",
         )
         .withDefault(KafkaConfig.defaultTopic),
-      Opts
-        .env[KafkaConfig.CommitBatchSize](
-          name = "RELEASE_CHECKER_KAFKA_COMMIT_BATCH_SIZE",
-          help = "Set Kafka Commit Batch Size.",
-        )
-        .withDefault(KafkaConfig.defaultCommitBatchSize),
+      Opts(KafkaConfig.defaultCommitBatch),
     ).mapN(KafkaConfig.apply)
 
     val jdbcConfig = (

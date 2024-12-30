@@ -122,7 +122,9 @@ lazy val `notifications-dsl` = project
       "io.circe" %% "circe-generic" % "0.14.10",
       "io.github.iltotore" %% "iron" % "2.6.0",
       "io.github.iltotore" %% "iron-circe" % "2.6.0",
+      "org.typelevel" %% "cats-core" % "2.12.0",
       "org.typelevel" %% "cats-effect" % "3.5.7",
+      "org.typelevel" %% "cats-kernel" % "2.12.0",
     ),
   )
   .dependsOn(`commons-lang` % "test->test;compile->compile")

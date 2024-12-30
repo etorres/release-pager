@@ -4,9 +4,7 @@ services:
     hostname: kafka.test
     container_name: kafka.test
     ports:
-      - "9101:9101"
       - "9092:9092"
-      - "29092:29092"
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT

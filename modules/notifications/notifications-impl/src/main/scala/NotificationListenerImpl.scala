@@ -6,6 +6,8 @@ import cats.effect.IO
 import fs2.Stream
 
 object NotificationListenerImpl:
-  final class Kafka(listener: KafkaListener[Notification]) extends NotificationListener:
+  final class Kafka(listener: KafkaListener[Notification], consumer: Notification => IO[Unit])
+      extends NotificationListener:
     def stream: Stream[IO, Unit] =
-      listener.listen(notification => IO.println(s" >> Received: $notification")) // TODO
+      listener.listen:
+        case (_, notification) => consumer(notification)

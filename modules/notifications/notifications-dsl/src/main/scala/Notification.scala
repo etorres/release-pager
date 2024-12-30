@@ -2,6 +2,7 @@ package es.eriktorr.pager
 
 import commons.refined.Constraints.NonEmptyString
 
+import cats.Order
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 import io.github.iltotore.iron.*
@@ -41,3 +42,6 @@ object Notification:
   given Decoder[Notification] = deriveDecoder
 
   given Encoder[Notification] = deriveEncoder
+
+  given Order[Notification] =
+    Order.by[Notification, (String, String)](x => (x.projectName, x.version))

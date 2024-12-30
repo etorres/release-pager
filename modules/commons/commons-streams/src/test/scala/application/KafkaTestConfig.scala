@@ -1,15 +1,15 @@
 package es.eriktorr.pager
 package application
 
-import cats.data.NonEmptyList
+import scala.concurrent.duration.DurationInt
 
 enum KafkaTestConfig(val config: KafkaConfig):
   case LocalContainer
       extends KafkaTestConfig(
         KafkaConfig(
-          NonEmptyList.one(KafkaConfig.defaultBootstrapServer),
+          KafkaConfig.defaultBootstrapServers,
           KafkaConfig.defaultConsumerGroup,
           KafkaConfig.defaultTopic,
-          KafkaConfig.CommitBatchSize.applyUnsafe(1),
+          KafkaConfig.CommitBatch(KafkaConfig.CommitBatchSize.applyUnsafe(2), 2.seconds),
         ),
       )
