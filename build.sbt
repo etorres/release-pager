@@ -103,14 +103,21 @@ lazy val `commons-lang` = project
   .settings(
     libraryDependencies ++= Seq(
       "com.47deg" %% "scalacheck-toolbox-datetime" % "0.7.0" % Test,
+      "com.lihaoyi" %% "os-lib" % "0.11.3" % Test,
+      "com.lmax" % "disruptor" % "3.4.4" % Test,
       "com.monovore" %% "decline" % "2.4.1",
+      "io.circe" %% "circe-parser" % "0.14.10" % Test,
       "io.github.iltotore" %% "iron" % "2.6.0",
       "io.hypersistence" % "hypersistence-tsid" % "2.1.3",
+      "org.apache.logging.log4j" % "log4j-core" % "2.24.3" % Test,
+      "org.apache.logging.log4j" % "log4j-layout-template-json" % "2.24.3" % Test,
+      "org.apache.logging.log4j" % "log4j-slf4j2-impl" % "2.24.3" % Test,
       "org.typelevel" %% "cats-collections-core" % "0.9.9",
       "org.typelevel" %% "cats-core" % "2.12.0",
       "org.typelevel" %% "cats-effect" % "3.5.7",
       "org.typelevel" %% "cats-effect-kernel" % "3.5.7",
       "org.typelevel" %% "cats-kernel" % "2.12.0",
+      "org.typelevel" %% "log4cats-slf4j" % "2.7.0" % Test,
     ),
   )
 
