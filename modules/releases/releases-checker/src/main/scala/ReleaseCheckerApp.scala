@@ -29,7 +29,7 @@ object ReleaseCheckerApp extends CommandIOApp(name = "release-checker", header =
       kafkaSender <- KafkaSender.resource[Notification](config.kafkaConfig)
       transactor <- JdbcTransactor(config.jdbcConfig).resource
     yield (httpClient, kafkaSender, transactor)).use: (httpClient, kafkaSender, transactor) =>
-      val releaseChecker = ReleaseChecker.impl(
+      val releaseChecker = ReleaseChecker.Default(
         RepositoryServiceImpl.Postgres(transactor, RepositoryServiceConfig.default),
         ReleaseFinderImpl.MavenCentral(httpClient),
         SubscriptionServiceImpl.Postgres(transactor),

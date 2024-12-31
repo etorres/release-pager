@@ -27,10 +27,5 @@ final class ReleaseCheckerSuite extends CatsEffectSuite:
                  |}""".stripMargin.replaceAll("\\s", "").nn.replaceAll("\\R", "").nn
           .fold("")(_ + _),
       )
-    ReleaseChecker(
-      FakeRepositoryService(repositories),
-      FakeReleaseFinder(isEven),
-      FakeSubscriptionService(subscriptions),
-      FakeNotificationBuilder,
-      FakeNotificationSender,
-    ).checkAndNotify.value.assertEquals(expected)
+    FakeReleaseChecker(repositories, isEven, subscriptions).checkAndNotify.value
+      .assertEquals(expected)

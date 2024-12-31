@@ -8,9 +8,6 @@ TO-DO:
 ## Resources
 
 * [Modeling in Scala, part 1: modeling your domain](https://kubuszok.com/2024/modeling-in-scala-part-1/).
-* [Zero-cost, compile-time, type-safe dependency injection library](https://github.com/softwaremill/macwire).
-* [Dependency Injection in Scala using MacWire](https://di-in-scala.github.io/).
-* [EitherT](https://typelevel.org/cats/datatypes/eithert.html).
 * [The problem with EitherT](https://www.beyondthelines.net/programming/the-problem-with-eithert/).
 
 ### Database Primary Keys
@@ -21,15 +18,9 @@ TO-DO:
 
 ### Job Scheduling
 
-* [Create and schedule jobs with JobRunr using only a Java lambda](https://www.jobrunr.io/en/guides/intro/java-lambda/).
-* [Create and schedule jobs with JobRunr using a JobRequest and JobRequestHandler](https://www.jobrunr.io/en/guides/intro/java-job-request/).
-* [JobRunr Installation - Storage](https://www.jobrunr.io/en/documentation/installation/storage/).
 * [Work with systemd.time like calendar events in Scala](https://github.com/eikek/calev).
 
 ### Apache Kafka
 
 * [Exactly Once Processing in Kafka with Java](https://www.baeldung.com/kafka-exactly-once).
-
-### Misc
-
-* [Cats Effect - Env](https://typelevel.org/cats-effect/docs/std/env).
+* [Hands-on Kafka Streams in Scala](https://softwaremill.com/hands-on-kafka-streams-in-scala/).

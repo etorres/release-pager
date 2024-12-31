@@ -153,6 +153,9 @@ lazy val `releases-checker` = project
   .configure(baseSettings)
   .settings(
     libraryDependencies ++= Seq(
+      "co.fs2" %% "fs2-core" % "3.11.0",
+      "com.github.eikek" %% "calev-core" % "0.7.2",
+      "com.github.eikek" %% "calev-fs2" % "0.7.2",
       "com.lmax" % "disruptor" % "3.4.4" % Runtime,
       "com.monovore" %% "decline" % "2.4.1",
       "com.monovore" %% "decline-effect" % "2.4.1",

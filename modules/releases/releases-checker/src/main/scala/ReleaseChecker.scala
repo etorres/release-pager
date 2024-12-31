@@ -5,7 +5,7 @@ import cats.data.{NonEmptyList, OptionT}
 import cats.effect.IO
 import cats.implicits.{catsSyntaxParallelTraverse1, toTraverseOps}
 
-final class ReleaseChecker[
+abstract class ReleaseChecker[
     Notification,
     Notified: Semigroup,
     Repository,
@@ -40,7 +40,7 @@ final class ReleaseChecker[
   yield maybeNotified)
 
 object ReleaseChecker:
-  def impl(
+  final class Default(
       repositoryService: RepositoryService[Repository, Unit, Repository.Version],
       releaseFinder: ReleaseFinder[Repository, Repository.Version],
       subscriptionService: SubscriptionService[Repository, Subscriber, Subscriber.Id, Subscription],
@@ -51,18 +51,10 @@ object ReleaseChecker:
         Notification,
       ],
       notificationSender: NotificationSender[Notification, Unit, Unit],
-  ): ReleaseChecker[Notification, Unit, Repository, Subscriber, Unit, Repository.Version] =
-    ReleaseChecker[
-      Notification,
-      Unit,
-      Repository,
-      Subscriber,
-      Unit,
-      Repository.Version,
-    ](
-      repositoryService,
-      releaseFinder,
-      subscriptionService,
-      notificationBuilder,
-      notificationSender,
-    )
+  ) extends ReleaseChecker[Notification, Unit, Repository, Subscriber, Unit, Repository.Version](
+        repositoryService,
+        releaseFinder,
+        subscriptionService,
+        notificationBuilder,
+        notificationSender,
+      )

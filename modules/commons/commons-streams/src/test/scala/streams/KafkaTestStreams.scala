@@ -7,7 +7,8 @@ import streams.KafkaStreams.{KafkaListener, KafkaSender}
 import cats.effect.{IO, Resource}
 import fs2.kafka.{AdminClientSettings, KafkaAdminClient}
 import io.circe.{Decoder, Encoder}
-import org.apache.kafka.clients.admin.NewTopic
+import org.apache.kafka.clients.admin.{AlterConfigOp, ConfigEntry, NewTopic}
+import org.apache.kafka.common.config.ConfigResource
 import org.apache.kafka.common.errors.UnknownTopicOrPartitionException
 
 final class KafkaTestStreams(kafkaTestConfig: KafkaTestConfig):
@@ -28,5 +29,12 @@ final class KafkaTestStreams(kafkaTestConfig: KafkaTestConfig):
           .recoverWith:
             case _: UnknownTopicOrPartitionException => IO.unit
         _ <- adminClient.createTopic(NewTopic(kafkaTestConfig.config.topic, 1, 1.toShort))
+        _ <- adminClient.alterConfigs(
+          Map(
+            ConfigResource(ConfigResource.Type.TOPIC, kafkaTestConfig.config.topic) -> List(
+              AlterConfigOp(ConfigEntry("cleanup.policy", "compact"), AlterConfigOp.OpType.SET),
+            ),
+          ),
+        )
       yield ())
     yield ()
