@@ -30,7 +30,7 @@ object KafkaConfig:
           .split(",")
           .toList
           .map { server =>
-            val serverParts = server.split(":", 1).toList
+            val serverParts = server.split(":", 2).toList
             serverParts match
               case ::(head, next) =>
                 for

@@ -64,8 +64,8 @@ object ReleaseCheckerConfig:
           name = "RELEASE_CHECKER_KAFKA_BOOTSTRAP_SERVERS",
           help = "Set Kafka Bootstrap Servers.",
         )
-        .map(KafkaConfig.BootstrapServer.from)
-        .withDefault(KafkaConfig.defaultBootstrapServers),
+        .withDefault(KafkaConfig.defaultBootstrapServers.map(_.asString).toList.mkString(","))
+        .map(KafkaConfig.BootstrapServer.from),
       Opts
         .env[KafkaConfig.ConsumerGroup](
           name = "RELEASE_CHECKER_KAFKA_CONSUMER_GROUP",
@@ -90,7 +90,7 @@ object ReleaseCheckerConfig:
         .withDefault(CalEvent.unsafe("*-*-* *:15:00")),
       Opts
         .env[FiniteDuration](
-          name = "RELEASE_CHECKER_SCHEDULER_MERGE_FREQUENCY",
+          name = "RELEASE_CHECKER_SCHEDULER_CHECK_FREQUENCY",
           help = "Set scheduler check frequency.",
         )
         .withDefault(1.hours),
