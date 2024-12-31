@@ -1,6 +1,8 @@
 package es.eriktorr.pager
 package api
 
+import Repository.Version
+
 import cats.Semigroup
 import cats.effect.IO
 import com.github.eikek.calev.CalEvent
@@ -9,7 +11,7 @@ import fs2.Stream
 
 import scala.concurrent.duration.FiniteDuration
 
-final class ReleaseCheckerScheduler[
+abstract class ReleaseCheckerScheduler[
     Notification,
     Notified: Semigroup,
     Repository,
@@ -37,3 +39,19 @@ final class ReleaseCheckerScheduler[
 
   private def runCheck() =
     Stream.eval(releaseChecker.checkAndNotify.value.void).timeout(checkFrequency)
+
+object ReleaseCheckerScheduler:
+  final class Default(
+      calendarEvent: CalEvent,
+      releaseChecker: ReleaseChecker.Default,
+      checkFrequency: FiniteDuration,
+  )(using
+      scheduler: Scheduler[IO],
+  ) extends ReleaseCheckerScheduler[
+        Notification,
+        Unit,
+        Repository,
+        Subscriber,
+        Unit,
+        Repository.Version,
+      ](calendarEvent, releaseChecker, checkFrequency)

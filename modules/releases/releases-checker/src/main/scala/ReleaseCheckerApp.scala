@@ -1,7 +1,7 @@
 package es.eriktorr.pager
 
 import RepositoryServiceImpl.RepositoryServiceConfig
-import api.HttpClient
+import api.{HttpClient, ReleaseCheckerScheduler}
 import application.{ReleaseCheckerConfig, ReleaseCheckerParams}
 import commons.std.TSIDGen
 import db.JdbcTransactor
@@ -9,6 +9,7 @@ import streams.KafkaStreams.KafkaSender
 
 import cats.effect.{ExitCode, IO}
 import cats.implicits.catsSyntaxTuple2Semigroupal
+import com.github.eikek.calev.fs2.Scheduler
 import com.monovore.decline.Opts
 import com.monovore.decline.effect.CommandIOApp
 import org.typelevel.log4cats.SelfAwareStructuredLogger
@@ -22,6 +23,7 @@ object ReleaseCheckerApp extends CommandIOApp(name = "release-checker", header =
 
   private def program(config: ReleaseCheckerConfig, params: ReleaseCheckerParams) = for
     logger <- Slf4jLogger.create[IO]
+    given Scheduler[IO] = Scheduler.systemDefault[IO]
     given SelfAwareStructuredLogger[IO] = logger
     given TSIDGen[IO] = TSIDGen[IO]
     releaseChecker <- (for
@@ -36,5 +38,10 @@ object ReleaseCheckerApp extends CommandIOApp(name = "release-checker", header =
         NotificationBuilderImpl.Default(),
         NotificationSenderImpl.Kafka(kafkaSender),
       )
-      IO.pure(releaseChecker).flatMap(_ => IO.never)
+      val scheduler = ReleaseCheckerScheduler.Default(
+        config.schedulerConfig.calendarEvent,
+        releaseChecker,
+        config.schedulerConfig.checkFrequency,
+      )
+      scheduler.stream.compile.drain
   yield ExitCode.Success

@@ -25,7 +25,7 @@ final class ReleaseCheckerSchedulerSuite extends CatsEffectSuite with ScalaCheck
           stateRef <- Ref.of[IO, NotificationSenderState](NotificationSenderState.empty)
           releaseChecker = FakeReleaseChecker.InMemory(repositories, subscriptions, stateRef)
           releaseCheckerScheduler =
-            ReleaseCheckerScheduler(
+            FakeReleaseCheckerScheduler(
               CalEvent.unsafe("*-*-* *:*:*"),
               releaseChecker,
               1.minutes,

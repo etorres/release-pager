@@ -54,6 +54,18 @@ lazy val baseSettings: Project => Project = _.settings(
   Test / testOptions += Tests.Argument(MUnitFramework, "--exclude-tags=online"),
 )
 
+lazy val `commons-cal` = project
+  .in(file("modules/commons/commons-cal"))
+  .configure(baseSettings)
+  .settings(
+    libraryDependencies ++= Seq(
+      "com.github.eikek" %% "calev-core" % "0.7.2",
+      "com.monovore" %% "decline" % "2.4.1",
+      "org.typelevel" %% "cats-core" % "2.12.0",
+    ),
+  )
+  .dependsOn(`commons-lang` % "test->test;compile->compile")
+
 lazy val `commons-db` = project
   .in(file("modules/commons/commons-db"))
   .configure(baseSettings)
@@ -180,6 +192,7 @@ lazy val `releases-checker` = project
     Universal / maintainer := "https://github.com/etorres/release-pager",
   )
   .dependsOn(
+    `commons-cal` % "test->test;compile->compile",
     `notifications-impl` % "test->test;compile->compile",
     `subscriptions-impl` % "test->test;compile->compile",
   )
@@ -247,6 +260,7 @@ lazy val `subscriptions-impl` = project
 lazy val root = project
   .in(file("."))
   .aggregate(
+    `commons-cal`,
     `commons-db`,
     `commons-lang`,
     `notifications-dsl`,
