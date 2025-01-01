@@ -24,7 +24,7 @@ object ReleaseSenderApp extends CommandIOApp(name = "release-sender", header = "
       httpClient <- HttpClient(verbose = params.verbose).resource
       kafkaListener <- KafkaListener.resource[Notification](config.kafkaConfig)
     yield (httpClient, kafkaListener)).use: (httpClient, kafkaListener) =>
-      val broadcaster = Broadcaster.Slack(httpClient)
+      val broadcaster = Broadcaster.TelegramBot(httpClient, config.telegramConfig.apiToken)
       val releaseSender =
         ReleaseSender(NotificationListenerImpl.Kafka(kafkaListener, broadcaster.broadcast))
       releaseSender.stream.compile.drain

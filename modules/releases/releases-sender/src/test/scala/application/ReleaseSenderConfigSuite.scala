@@ -26,5 +26,6 @@ final class ReleaseSenderConfigSuite extends FunSuite:
           KafkaConfig.Topic.applyUnsafe("kafka_topic"),
           KafkaConfig.defaultCommitBatch,
         ),
+        TelegramConfig(TelegramConfig.ApiToken.applyUnsafe("telegram_api_token")),
       ).asRight[Help],
     )
