@@ -1,5 +1,4 @@
 package es.eriktorr.pager
-package api
 
 import cats.effect.{IO, Resource}
 import org.http4s.client.Client

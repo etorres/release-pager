@@ -3,7 +3,6 @@ package es.eriktorr.pager
 import ReleaseFinderImpl.MavenCentralError
 import ReleaseFinderImpl.MavenCentralError.RepositoryNotFound
 import Repository.*
-import api.HttpClient
 import commons.spec.TestFilters.online
 import commons.std.TSIDGen
 

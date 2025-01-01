@@ -1,7 +1,7 @@
 package es.eriktorr.pager
 
 import RepositoryServiceImpl.RepositoryServiceConfig
-import api.{HttpClient, ReleaseCheckerScheduler}
+import api.ReleaseCheckerScheduler
 import application.{ReleaseCheckerConfig, ReleaseCheckerParams}
 import commons.std.TSIDGen
 import db.JdbcTransactor
@@ -26,7 +26,7 @@ object ReleaseCheckerApp extends CommandIOApp(name = "release-checker", header =
     given Scheduler[IO] = Scheduler.systemDefault[IO]
     given SelfAwareStructuredLogger[IO] = logger
     given TSIDGen[IO] = TSIDGen[IO]
-    releaseChecker <- (for
+    _ <- (for
       httpClient <- HttpClient(verbose = params.verbose).resource
       kafkaSender <- KafkaSender.resource[Notification](config.kafkaConfig)
       transactor <- JdbcTransactor(config.jdbcConfig).resource

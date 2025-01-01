@@ -64,20 +64,8 @@ lazy val baseSettings: Project => Project = _.settings(
   Test / testOptions += Tests.Argument(MUnitFramework, "--exclude-tags=online"),
 )
 
-lazy val `commons-cal` = project
-  .in(file("modules/commons/commons-cal"))
-  .configure(baseSettings)
-  .settings(
-    libraryDependencies ++= Seq(
-      "com.github.eikek" %% "calev-core" % "0.7.2",
-      "com.monovore" %% "decline" % "2.4.1",
-      "org.typelevel" %% "cats-core" % "2.12.0",
-    ),
-  )
-  .dependsOn(`commons-lang` % "test->test;compile->compile")
-
-lazy val `commons-db` = project
-  .in(file("modules/commons/commons-db"))
+lazy val `commons-database` = project
+  .in(file("modules/commons/commons-database"))
   .configure(baseSettings)
   .settings(
     libraryDependencies ++= Seq(
@@ -95,10 +83,25 @@ lazy val `commons-db` = project
       "org.typelevel" %% "cats-effect-kernel" % "3.5.7",
     ),
   )
-  .dependsOn(`commons-lang` % "test->test;compile->compile")
+  .dependsOn(`commons-language` % "test->test;compile->compile")
 
-lazy val `commons-lang` = project
-  .in(file("modules/commons/commons-lang"))
+lazy val `commons-http` = project
+  .in(file("modules/commons/commons-http"))
+  .configure(baseSettings)
+  .settings(
+    libraryDependencies ++= Seq(
+      "co.fs2" %% "fs2-io" % "3.11.0",
+      "org.http4s" %% "http4s-client" % "0.23.30",
+      "org.http4s" %% "http4s-ember-client" % "0.23.30",
+      "org.typelevel" %% "case-insensitive" % "1.4.2",
+      "org.typelevel" %% "cats-effect" % "3.5.4",
+      "org.typelevel" %% "cats-effect-kernel" % "3.5.7",
+      "org.typelevel" %% "log4cats-core" % "2.7.0",
+    ),
+  )
+
+lazy val `commons-language` = project
+  .in(file("modules/commons/commons-language"))
   .configure(baseSettings)
   .settings(
     libraryDependencies ++= Seq(
@@ -107,7 +110,7 @@ lazy val `commons-lang` = project
       "com.lmax" % "disruptor" % "3.4.4" % Test,
       "com.monovore" %% "decline" % "2.4.1",
       "io.circe" %% "circe-parser" % "0.14.10" % Test,
-      "io.github.iltotore" %% "iron" % "2.6.0",
+      "io.github.iltotore" %% "iron" % "2.6.0" % Optional,
       "io.hypersistence" % "hypersistence-tsid" % "2.1.3",
       "org.apache.logging.log4j" % "log4j-core" % "2.24.3" % Test,
       "org.apache.logging.log4j" % "log4j-layout-template-json" % "2.24.3" % Test,
@@ -133,13 +136,13 @@ lazy val `commons-streams` = project
       "io.circe" %% "circe-core" % "0.14.10",
       "io.circe" %% "circe-parser" % "0.14.10",
       "io.github.iltotore" %% "iron" % "2.6.0",
+      "org.apache.kafka" % "kafka-clients" % "3.9.0",
       "org.typelevel" %% "cats-core" % "2.12.0",
       "org.typelevel" %% "cats-effect" % "3.5.7",
-      "org.typelevel" %% "log4cats-core" % "2.7.0",
-      "org.typelevel" %% "log4cats-slf4j" % "2.7.0",
+      "org.typelevel" %% "cats-effect-kernel" % "3.5.7",
     ),
   )
-  .dependsOn(`commons-lang` % "test->test;compile->compile")
+  .dependsOn(`commons-language` % "test->test;compile->compile")
 
 lazy val `notifications-dsl` = project
   .in(file("modules/notifications/notifications-dsl"))
@@ -156,7 +159,7 @@ lazy val `notifications-dsl` = project
       "org.typelevel" %% "cats-kernel" % "2.12.0",
     ),
   )
-  .dependsOn(`commons-lang` % "test->test;compile->compile")
+  .dependsOn(`commons-language` % "test->test;compile->compile")
 
 lazy val `notifications-impl` = project
   .in(file("modules/notifications/notifications-impl"))
@@ -209,7 +212,6 @@ lazy val `releases-checker` = project
     Universal / maintainer := "https://github.com/etorres/release-pager",
   )
   .dependsOn(
-    `commons-cal` % "test->test;compile->compile",
     `notifications-impl` % "test->test;compile->compile",
     `subscriptions-impl` % "test->test;compile->compile",
   )
@@ -219,10 +221,26 @@ lazy val `releases-sender` = project
   .in(file("modules/releases/releases-sender"))
   .configure(baseSettings)
   .settings(
-    libraryDependencies ++= Seq(),
+    libraryDependencies ++= Seq(
+      "co.fs2" %% "fs2-core" % "3.11.0",
+      "com.monovore" %% "decline" % "2.4.1",
+      "com.monovore" %% "decline-effect" % "2.4.1",
+      "io.circe" %% "circe-core" % "0.14.10",
+      "io.github.iltotore" %% "iron" % "2.6.0",
+      "io.github.iltotore" %% "iron-decline" % "2.6.0",
+      "org.http4s" %% "http4s-client" % "0.23.30",
+      "org.typelevel" %% "cats-core" % "2.12.0",
+      "org.typelevel" %% "cats-effect" % "3.5.7",
+      "org.typelevel" %% "cats-effect-kernel" % "3.5.7",
+      "org.typelevel" %% "log4cats-core" % "2.7.0",
+      "org.typelevel" %% "log4cats-slf4j" % "2.7.0",
+    ),
     Universal / maintainer := "https://github.com/etorres/release-pager",
   )
-  .dependsOn(`commons-lang` % "test->test;compile->compile")
+  .dependsOn(
+    `commons-http` % "test->test;compile->compile",
+    `notifications-impl` % "test->test;compile->compile",
+  )
   .enablePlugins(JavaAppPackaging)
 
 lazy val `subscriptions-dsl` = project
@@ -237,7 +255,7 @@ lazy val `subscriptions-dsl` = project
       "org.typelevel" %% "cats-kernel" % "2.12.0",
     ),
   )
-  .dependsOn(`commons-lang` % "test->test;compile->compile")
+  .dependsOn(`commons-language` % "test->test;compile->compile")
 
 lazy val `subscriptions-impl` = project
   .in(file("modules/subscriptions/subscriptions-impl"))
@@ -245,7 +263,6 @@ lazy val `subscriptions-impl` = project
   .settings(
     libraryDependencies ++= Seq(
       "co.fs2" %% "fs2-core" % "3.11.0",
-      "co.fs2" %% "fs2-io" % "3.11.0",
       "com.lmax" % "disruptor" % "3.4.4" % Runtime,
       "com.zaxxer" % "HikariCP" % "6.2.1" exclude ("org.slf4j", "slf4j-api"),
       "io.circe" %% "circe-core" % "0.14.10",
@@ -254,7 +271,6 @@ lazy val `subscriptions-impl` = project
       "org.http4s" %% "http4s-circe" % "0.23.30",
       "org.http4s" %% "http4s-client" % "0.23.30",
       "org.http4s" %% "http4s-core" % "0.23.30",
-      "org.http4s" %% "http4s-ember-client" % "0.23.30",
       "org.tpolecat" %% "doobie-core" % "1.0.0-RC5",
       "org.tpolecat" %% "doobie-free" % "1.0.0-RC5",
       "org.tpolecat" %% "doobie-hikari" % "1.0.0-RC5",
@@ -263,23 +279,23 @@ lazy val `subscriptions-impl` = project
       "org.typelevel" %% "cats-effect" % "3.5.7",
       "org.typelevel" %% "cats-effect-kernel" % "3.5.7",
       "org.typelevel" %% "cats-free" % "2.12.0",
-      "org.typelevel" %% "case-insensitive" % "1.4.2",
       "org.typelevel" %% "cats-kernel" % "2.12.0",
-      "org.typelevel" %% "log4cats-core" % "2.7.0",
       "org.typelevel" %% "vault" % "3.6.0",
     ),
   )
   .dependsOn(
-    `commons-db` % "test->test;compile->compile",
+    `commons-database` % "test->test;compile->compile",
+    `commons-http` % "test->test;compile->compile",
     `subscriptions-dsl` % "test->test;compile->compile",
   )
 
 lazy val root = project
   .in(file("."))
   .aggregate(
-    `commons-cal`,
-    `commons-db`,
-    `commons-lang`,
+    `commons-database`,
+    `commons-http`,
+    `commons-language`,
+    `commons-streams`,
     `notifications-dsl`,
     `notifications-impl`,
     `releases-checker`,
