@@ -263,6 +263,7 @@ lazy val `subscriptions-impl` = project
       "org.tpolecat" %% "doobie-free" % "1.0.0-RC5",
       "org.tpolecat" %% "doobie-hikari" % "1.0.0-RC5",
       "org.tpolecat" %% "doobie-postgres" % "1.0.0-RC5" % Test,
+      "org.tpolecat" %% "typename" % "1.1.0",
       "org.typelevel" %% "cats-core" % "2.12.0",
       "org.typelevel" %% "cats-effect" % "3.5.7",
       "org.typelevel" %% "cats-effect-kernel" % "3.5.7",
