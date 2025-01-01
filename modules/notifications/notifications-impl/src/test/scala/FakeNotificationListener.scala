@@ -11,7 +11,10 @@ final class FakeNotificationListener(stateRef: Ref[IO, NotificationListenerState
     Stream.eval(stateRef.update(_ => NotificationListenerState.empty))
 
 object FakeNotificationListener:
-  final case class NotificationListenerState(notifications: List[Notification])
+  final case class NotificationListenerState(notifications: List[Notification]):
+    def set(newNotifications: List[Notification]): NotificationListenerState = copy(
+      newNotifications,
+    )
 
   object NotificationListenerState:
     val empty: NotificationListenerState = NotificationListenerState(List.empty)

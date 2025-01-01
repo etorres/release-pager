@@ -5,18 +5,6 @@ Global / excludeLintKeys += idePackagePrefix
 
 ThisBuild / scalaVersion := "3.3.4"
 
-ThisBuild / scalacOptions ++= Seq(
-  "-Xfatal-warnings",
-  "-deprecation",
-  "-feature",
-  "-unchecked",
-  "-source:future", // https://github.com/oleg-py/better-monadic-for
-  "-Yexplicit-nulls", // https://docs.scala-lang.org/scala3/reference/other-new-features/explicit-nulls.html
-  "-Ysafe-init", // https://docs.scala-lang.org/scala3/reference/other-new-features/safe-initialization.html
-  "-Wnonunit-statement",
-  "-Wunused:all",
-)
-
 ThisBuild / semanticdbEnabled := true
 ThisBuild / javacOptions ++= Seq("-source", "21", "-target", "21")
 

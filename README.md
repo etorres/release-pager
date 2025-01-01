@@ -4,6 +4,7 @@
 
 TO-DO:
 * The node ID can be given to `TSID.Factory` by defining the tsid.node system property or the TSID_NODE environment variable. Otherwise, the node identifier will be chosen randomly.
+* Define the environment variable `SBT_TPOLECAT_RELEASE` to enable the release mode when building distribution artifacts for this project.
 
 ## Resources
 

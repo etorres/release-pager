@@ -15,7 +15,9 @@ final class ReleaseSenderSuite extends CatsEffectSuite with ScalaCheckEffectSuit
     forAllF(testCaseGen):
       case TestCase(notifications) =>
         (for
-          stateRef <- Ref.of[IO, NotificationListenerState](NotificationListenerState.empty)
+          stateRef <- Ref.of[IO, NotificationListenerState](
+            NotificationListenerState.empty.set(notifications),
+          )
           releaseSender = ReleaseSender(FakeNotificationListener(stateRef))
           _ <- releaseSender.stream.take(1L).compile.drain
           obtained <- stateRef.get
