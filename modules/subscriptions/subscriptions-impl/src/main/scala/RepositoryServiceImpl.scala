@@ -22,11 +22,7 @@ object RepositoryServiceImpl:
                      |FROM repositories 
                      |WHERE updated_at + interval $frequencyFragment <= CURRENT_TIMESTAMP
                      |LIMIT ${config.limit}""".stripMargin
-      for repositories <- sql
-          .query[Repository]
-          .to[List]
-          .transact(transactor)
-      yield repositories
+      sql.query[Repository].to[List].transact(transactor)
 
     override def update(repository: Repository, version: Repository.Version): IO[Unit] =
       val sql = sql"""UPDATE repositories
