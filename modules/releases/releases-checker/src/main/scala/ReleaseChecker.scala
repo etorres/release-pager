@@ -3,7 +3,7 @@ package es.eriktorr.pager
 import cats.Semigroup
 import cats.data.{NonEmptyList, OptionT}
 import cats.effect.IO
-import cats.implicits.{catsSyntaxParallelTraverse1, toTraverseOps}
+import cats.implicits.catsSyntaxParallelFlatTraverse1
 
 abstract class ReleaseChecker[
     Notification,
@@ -21,22 +21,18 @@ abstract class ReleaseChecker[
 ):
   def checkAndNotify: OptionT[IO, Notified] = OptionT(for
     repositories <- repositoryService.findEarliestUpdates()
-    maybeNotifiedList <- repositories
-      .parTraverse: repository =>
-        for
-          maybeVersion <- releaseFinder.findNewVersionOf(repository).value
-          maybeNotified <- maybeVersion.traverse(version =>
-            for
-              updated <- repositoryService.update(repository, version)
-              subscribers <- subscriptionService.subscribersOf(repository)
-              notification <- notificationBuilder.make(subscribers, repository, version)
-              notified <- notificationSender.send(updated, notification)
-            yield notified,
-          )
-        yield maybeNotified
-    maybeNotified = NonEmptyList
-      .fromList(maybeNotifiedList.collect { case Some(value) => value })
-      .map(_.reduce)
+    notifiedList <- repositories
+      .parFlatTraverse: repository =>
+        (for
+          version <- releaseFinder.findNewVersionOf(repository)
+          notified <- OptionT.liftF(for
+            updated <- repositoryService.update(repository, version)
+            subscribers <- subscriptionService.subscribersOf(repository)
+            notification <- notificationBuilder.make(subscribers, repository, version)
+            notified <- notificationSender.send(updated, notification)
+          yield notified)
+        yield notified).value.map(_.toList)
+    maybeNotified = NonEmptyList.fromList(notifiedList).map(_.reduce)
   yield maybeNotified)
 
 object ReleaseChecker:
