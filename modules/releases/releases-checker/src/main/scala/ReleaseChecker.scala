@@ -27,9 +27,9 @@ abstract class ReleaseChecker[
           version <- releaseFinder.findNewVersionOf(repository)
           notified <- OptionT.liftF:
             for
-              updated <- repositoryService.update(repository, version)
               subscribers <- subscriptionService.subscribersOf(repository)
               notification <- notificationBuilder.make(subscribers, repository, version)
+              updated <- repositoryService.update(repository, version)
               notified <- notificationSender.send(updated, notification)
             yield notified
         yield notified).value.map(_.toList)
