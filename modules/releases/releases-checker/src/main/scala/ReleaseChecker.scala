@@ -19,21 +19,22 @@ abstract class ReleaseChecker[
     notificationBuilder: NotificationBuilder[Subscriber, Repository, Version, Notification],
     notificationSender: NotificationSender[Notification, Notified, Updated],
 ):
-  def checkAndNotify: OptionT[IO, Notified] = OptionT(for
-    repositories <- repositoryService.findEarliestUpdates()
-    notifiedList <- repositories
-      .parFlatTraverse: repository =>
+  def checkAndNotify: OptionT[IO, Notified] = OptionT:
+    for
+      repositories <- repositoryService.findEarliestUpdates()
+      notifiedList <- repositories.parFlatTraverse: repository =>
         (for
           version <- releaseFinder.findNewVersionOf(repository)
-          notified <- OptionT.liftF(for
-            updated <- repositoryService.update(repository, version)
-            subscribers <- subscriptionService.subscribersOf(repository)
-            notification <- notificationBuilder.make(subscribers, repository, version)
-            notified <- notificationSender.send(updated, notification)
-          yield notified)
+          notified <- OptionT.liftF:
+            for
+              updated <- repositoryService.update(repository, version)
+              subscribers <- subscriptionService.subscribersOf(repository)
+              notification <- notificationBuilder.make(subscribers, repository, version)
+              notified <- notificationSender.send(updated, notification)
+            yield notified
         yield notified).value.map(_.toList)
-    maybeNotified = NonEmptyList.fromList(notifiedList).map(_.reduce)
-  yield maybeNotified)
+      maybeNotified = NonEmptyList.fromList(notifiedList).map(_.reduce)
+    yield maybeNotified
 
 object ReleaseChecker:
   final class Default(
