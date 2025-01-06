@@ -12,7 +12,7 @@ final class FakeReleaseCheckerScheduler(
     releaseChecker: FakeReleaseChecker.InMemory,
     checkFrequency: FiniteDuration,
 )(using scheduler: Scheduler[IO])
-    extends ReleaseCheckerScheduler[String, String, Int, String, String, String](
+    extends ReleaseCheckerScheduler[Int, String, String, String, String, String](
       calendarEvent,
       releaseChecker,
       checkFrequency,

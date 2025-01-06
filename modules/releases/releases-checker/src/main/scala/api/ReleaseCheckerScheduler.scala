@@ -12,21 +12,21 @@ import fs2.Stream
 import scala.concurrent.duration.FiniteDuration
 
 abstract class ReleaseCheckerScheduler[
+    Repository,
+    Version,
+    Updated,
+    Subscriber,
     Notification,
     Notified: Semigroup,
-    Repository,
-    Subscriber,
-    Updated,
-    Version,
 ](
     calendarEvent: CalEvent,
     releaseChecker: ReleaseChecker[
+      Repository,
+      Version,
+      Updated,
+      Subscriber,
       Notification,
       Notified,
-      Repository,
-      Subscriber,
-      Updated,
-      Version,
     ],
     checkFrequency: FiniteDuration,
 )(using
@@ -48,10 +48,10 @@ object ReleaseCheckerScheduler:
   )(using
       scheduler: Scheduler[IO],
   ) extends ReleaseCheckerScheduler[
+        Repository,
+        Repository.Version,
+        Unit,
+        Subscriber,
         Notification,
         Unit,
-        Repository,
-        Subscriber,
-        Unit,
-        Repository.Version,
       ](calendarEvent, releaseChecker, checkFrequency)

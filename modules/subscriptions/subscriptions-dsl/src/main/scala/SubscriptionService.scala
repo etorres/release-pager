@@ -2,7 +2,7 @@ package es.eriktorr.pager
 
 import cats.effect.IO
 
-trait SubscriptionService[Repository, Subscriber, SubscriberId, Subscription]:
+trait SubscriptionService[Repository, SubscriberId, Subscription, Subscriber]:
   def subscribe(repository: Repository, subscriberId: SubscriberId): IO[Subscription]
 
   def unsubscribe(repository: Repository, subscriberId: SubscriberId): IO[Subscription]

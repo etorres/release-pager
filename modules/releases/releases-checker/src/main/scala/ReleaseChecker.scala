@@ -6,18 +6,18 @@ import cats.effect.IO
 import cats.implicits.catsSyntaxParallelFlatTraverse1
 
 abstract class ReleaseChecker[
+    Repository,
+    Version,
+    Updated,
+    Subscriber,
     Notification,
     Notified: Semigroup,
-    Repository,
-    Subscriber,
-    Updated,
-    Version,
 ](
-    repositoryService: RepositoryService[Repository, Updated, Version],
+    repositoryService: RepositoryService[Repository, Version, Updated],
     releaseFinder: ReleaseFinder[Repository, Version],
-    subscriptionService: SubscriptionService[Repository, Subscriber, ?, ?],
+    subscriptionService: SubscriptionService[Repository, ?, ?, Subscriber],
     notificationBuilder: NotificationBuilder[Subscriber, Repository, Version, Notification],
-    notificationSender: NotificationSender[Notification, Notified, Updated],
+    notificationSender: NotificationSender[Updated, Notification, Notified],
 ):
   def checkAndNotify: OptionT[IO, Notified] = OptionT:
     for
@@ -38,17 +38,17 @@ abstract class ReleaseChecker[
 
 object ReleaseChecker:
   final class Default(
-      repositoryService: RepositoryService[Repository, Unit, Repository.Version],
+      repositoryService: RepositoryService[Repository, Repository.Version, Unit],
       releaseFinder: ReleaseFinder[Repository, Repository.Version],
-      subscriptionService: SubscriptionService[Repository, Subscriber, Subscriber.Id, Subscription],
+      subscriptionService: SubscriptionService[Repository, Subscriber.Id, Subscription, Subscriber],
       notificationBuilder: NotificationBuilder[
         Subscriber,
         Repository,
         Repository.Version,
         Notification,
       ],
-      notificationSender: NotificationSender[Notification, Unit, Unit],
-  ) extends ReleaseChecker[Notification, Unit, Repository, Subscriber, Unit, Repository.Version](
+      notificationSender: NotificationSender[Unit, Notification, Unit],
+  ) extends ReleaseChecker[Repository, Repository.Version, Unit, Subscriber, Notification, Unit](
         repositoryService,
         releaseFinder,
         subscriptionService,

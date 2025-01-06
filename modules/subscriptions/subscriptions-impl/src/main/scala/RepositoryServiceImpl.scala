@@ -13,7 +13,7 @@ object RepositoryServiceImpl:
   final class Postgres(
       transactor: HikariTransactor[IO],
       config: RepositoryServiceConfig = RepositoryServiceConfig.default,
-  ) extends RepositoryService[Repository, Unit, Repository.Version]
+  ) extends RepositoryService[Repository, Repository.Version, Unit]
       with RepositoryMapper:
     override def findEarliestUpdates(): IO[List[Repository]] =
       val frequencyFragment = Fragment.const(s"'${config.frequency.toHours} hours'")

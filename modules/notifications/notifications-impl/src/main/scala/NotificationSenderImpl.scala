@@ -6,7 +6,7 @@ import cats.effect.IO
 
 object NotificationSenderImpl:
   final class Kafka(sender: KafkaSender[Notification])
-      extends NotificationSender[Notification, Unit, Unit]:
+      extends NotificationSender[Unit, Notification, Unit]:
     override def send(precondition: Unit, notification: Notification): IO[Unit] =
       sender.send(notification.projectName, notification)
 

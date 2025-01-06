@@ -10,9 +10,9 @@ object SubscriptionServiceImpl:
   final class Postgres(transactor: HikariTransactor[IO])
       extends SubscriptionService[
         Repository,
-        Subscriber,
         Subscriber.Id,
         Subscription,
+        Subscriber,
       ]:
     override def subscribe(repository: Repository, subscriberId: Subscriber.Id): IO[Subscription] =
       val (_repositoryId: Long, _subscriberId: Long) = (repository.id, subscriberId)
