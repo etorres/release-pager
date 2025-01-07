@@ -23,7 +23,7 @@ final class ReleaseCheckerSchedulerSuite extends CatsEffectSuite with ScalaCheck
         given Scheduler[IO] = Scheduler.systemDefault[IO]
         (for
           stateRef <- Ref.of[IO, NotificationSenderState](NotificationSenderState.empty)
-          releaseChecker = FakeReleaseChecker.InMemory(repositories, subscriptions, stateRef)
+          releaseChecker = TestReleaseChecker.InMemory(repositories, subscriptions, stateRef)
           releaseCheckerScheduler =
             FakeReleaseCheckerScheduler(
               CalEvent.unsafe("*-*-* *:*:*"),
@@ -33,7 +33,7 @@ final class ReleaseCheckerSchedulerSuite extends CatsEffectSuite with ScalaCheck
           _ <- releaseCheckerScheduler.stream.take(1L).compile.drain
           obtained <- stateRef.get
         yield obtained.notifications.sorted)
-          .assertEquals(FakeReleaseChecker.expectedFrom(subscriptions).sorted)
+          .assertEquals(TestReleaseChecker.expectedFrom(subscriptions).sorted)
 
   override def scalaCheckTestParameters: Test.Parameters =
     super.scalaCheckTestParameters.withMinSuccessfulTests(3)

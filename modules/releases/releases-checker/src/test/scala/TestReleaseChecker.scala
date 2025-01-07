@@ -4,7 +4,7 @@ import FakeNotificationSender.InMemory.NotificationSenderState
 
 import cats.effect.{IO, Ref}
 
-sealed abstract class FakeReleaseChecker(
+sealed abstract class TestReleaseChecker(
     repositories: List[Int],
     filter: Int => Boolean,
     subscriptions: Map[Int, List[String]],
@@ -19,15 +19,15 @@ sealed abstract class FakeReleaseChecker(
         case None => FakeNotificationSender.Pure,
     )
 
-object FakeReleaseChecker:
+object TestReleaseChecker:
   final class Pure(repositories: List[Int], subscriptions: Map[Int, List[String]])
-      extends FakeReleaseChecker(repositories, isEven, subscriptions, None)
+      extends TestReleaseChecker(repositories, isEven, subscriptions, None)
 
   final class InMemory(
       repositories: List[Int],
       subscriptions: Map[Int, List[String]],
       stateRef: Ref[IO, NotificationSenderState],
-  ) extends FakeReleaseChecker(repositories, isEven, subscriptions, Some(stateRef))
+  ) extends TestReleaseChecker(repositories, isEven, subscriptions, Some(stateRef))
 
   private lazy val isEven = (repository: Int) => repository % 2 == 0
 

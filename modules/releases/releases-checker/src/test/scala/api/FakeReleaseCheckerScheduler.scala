@@ -9,7 +9,7 @@ import scala.concurrent.duration.FiniteDuration
 
 final class FakeReleaseCheckerScheduler(
     calendarEvent: CalEvent,
-    releaseChecker: FakeReleaseChecker.InMemory,
+    releaseChecker: TestReleaseChecker.InMemory,
     checkFrequency: FiniteDuration,
 )(using scheduler: Scheduler[IO])
     extends ReleaseCheckerScheduler[Int, String, String, String, String, String](
